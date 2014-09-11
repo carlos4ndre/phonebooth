@@ -1,4 +1,4 @@
 phonebooth
 ==========
 
-Chat room built with nodejs and webRTC.
+WebChatRoom built with nodejs and webRTC.
