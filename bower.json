@@ -2,7 +2,10 @@
   "name": "phonebooth",
   "version": "0.0.1",
   "dependencies": {
-    "bootstrap": "3.2.0",
-    "angular" : "1.2.x"
+    "bootstrap": "~3.2.0",
+    "angular" : "1.2.x",
+    "font-awesome": "4.2.x",
+    "spin": "~1.1.6",
+    "requirejs": "~2.1.10"
   }
 }
