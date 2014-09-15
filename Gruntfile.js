@@ -5,17 +5,25 @@ module.exports = function(grunt) {
 	//--------------------------==
 	grunt.initConfig({
     	pkg: grunt.file.readJSON('package.json'),
-    	clean: ["node_modules", "web"]
+    	clean: ["node_modules", "web/scripts/libs"],
+    	bower: {
+    		target: {
+      			rjsConfig: 'web/config.js'
+    		}
+  		}
   	});
 
-	//--------------------==
+	//-----------------------==
 	// Load grunt plugins
-	//--------------------==
+	//-----------------------==
 	grunt.loadNpmTasks('grunt-contrib-clean');
+	grunt.loadNpmTasks('grunt-bower-requirejs');
 
-	//--------------------==
-	// Custom tasks
-	//--------------------==
+	//-----------------------==
+	// Register tasks
+	//-----------------------==
+	grunt.registerTask('default', ['bower']);
+
     grunt.registerTask('install', 'install the backend and frontend dependencies', function() {
         var exec = require('child_process').exec;
         var cb = this.async();
