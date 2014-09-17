@@ -10,7 +10,7 @@ module.exports = function(grunt) {
     		target: {
       			rjsConfig: 'web/config.js'
     		}
-  		}
+        }
   	});
 
 	//-----------------------==
