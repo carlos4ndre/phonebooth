@@ -1,18 +1,21 @@
-// Load modules from the lib directory
+// Configure paths
 requirejs.config({
-    baseUrl: 'lib',
+    baseUrl: '',
     paths: {
-        app: '../app',
+        app: '../scripts',
         angular: 'scripts/libs/angular/angular',
         bootstrap: 'scripts/libs/bootstrap/dist/js/bootstrap',
         'font-awesome': 'scripts/libs/font-awesome/fonts/*',
         requirejs: 'scripts/libs/requirejs/require',
-        spin: 'scripts/libs/spin/javascripts/jquery.spin'
+        spin: 'scripts/libs/spin/javascripts/jquery.spin',
+        fontawesome: 'scripts/libs/fontawesome/fonts/*',
+        peerjs: 'scripts/libs/peerjs/peer.min'
     },
     packages: [
 
-    ]
+    ],
+    waitSeconds: 30
 });
 
-// Load app related files
-requirejs(['app/main']);
+// Load modules
+requirejs(['peerjs','app/main']);
