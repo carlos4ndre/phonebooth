@@ -1,11 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
+    	<meta charset="utf-8">
         <title>PhoneBooth - WebChatRoom</title>
         <link href="images/favicon.ico" rel="icon" type="image/x-icon" />
-        <script data-main="config" src="scripts/libs/requirejs/require.js"></script>
     </head>
     <body>
-    	<h1>Under Construction...</h1>
+    	<!-- MAIN CONTENT AND INJECTED VIEWS -->
+        <div ng-view></div>
+
+        <!-- Load javascript libraries with requirejs -->
+		<script data-main="config" src="scripts/libs/requirejs/require.js"></script>
     </body>
 </html>
