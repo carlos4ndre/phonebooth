@@ -1,4 +1,4 @@
-// Configure paths
+    // Configure paths
 requirejs.config({
     baseUrl: '',
     paths: {
@@ -11,7 +11,6 @@ requirejs.config({
         jquery: 'scripts/libs/jquery/dist/jquery.min',
         'angular-route': 'scripts/libs/angular-route/angular-route',
         'angular-resource': 'scripts/libs/angular-resource/angular-resource',
-        fontawesome: 'scripts/libs/fontawesome/fonts/*',
         domready: 'scripts/libs/domready/ready'
     },
     shim: {

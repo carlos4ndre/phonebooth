@@ -1,0 +1,15 @@
+/* TODO: Create media queries to support various types of screen resolutions */
+.registerBGImage {
+  background-image: url('../../images/phonebooth-bg.jpg');
+  background-color: #FFFFFF;
+  min-height: 500px;
+  min-width: 1000px;
+  overflow: hidden;
+}
+
+.centerRegisterForm {
+   position:fixed;
+   top:50%;
+   left:30%;
+   width:500px;
+}

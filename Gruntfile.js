@@ -8,7 +8,10 @@ module.exports = function(grunt) {
     	clean: ["node_modules", "web/scripts/libs"],
     	bower: {
     		target: {
-      			rjsConfig: 'web/config.js'
+      			rjsConfig: 'web/config.js',
+                options: {
+                    exclude: ['fontawesome']
+                }
     		}
         }
   	});
