@@ -5,7 +5,7 @@ define(['angular'], function (angular) {
 	var app = angular.module('phoneboothApp', ['ngRoute']);
 	app.config(['$routeProvider','$locationProvider', function($routeProvider,$locationProvider) {
 		$routeProvider.
-      		when('/', {
+      		when('/chatroom', {
         		templateUrl: 'templates/chatroom.html',
         		controller: 'chatroomController'
       		}).
@@ -18,15 +18,20 @@ define(['angular'], function (angular) {
       		});
 	}]);
 
-	app.controller('registerController', function($scope) {
-    	$scope.message = 'This is registerController';
+	app.controller('registerController', function($scope, $location) {
+      $scope.submit = function() {
+        if ($scope.nickname) {
+          $location.path("/chatroom/");
+        } else {
+          console.log('Empty Nickname!');
+        }
+      };
 	});
 
 	app.controller('chatroomController', function($scope) {
-    	$scope.message = 'This is chatroomController';
 	});
 
-    require(['domready'], function (document) {
-        angular.bootstrap(document, ['phoneboothApp']);
-    });
+  require(['domready'], function (document) {
+    angular.bootstrap(document, ['phoneboothApp']);
+  });
 });
