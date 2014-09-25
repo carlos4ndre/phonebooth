@@ -18,9 +18,10 @@ define(['angular'], function (angular) {
       		});
 	}]);
 
-	app.controller('registerController', function($scope, $location) {
+	app.controller('registerController', function($scope, $location, $rootScope) {
       $scope.submit = function() {
         if ($scope.nickname) {
+          $rootScope.nickname = $scope.nickname;
           $location.path("/chatroom/");
         } else {
           console.log('Empty Nickname!');
@@ -28,7 +29,8 @@ define(['angular'], function (angular) {
       };
 	});
 
-	app.controller('chatroomController', function($scope) {
+	app.controller('chatroomController', function($scope, $rootScope) {
+    $scope.message = $rootScope.nickname;
 	});
 
   require(['domready'], function (document) {
