@@ -1,15 +1,28 @@
 /* TODO: Create media queries to support various types of screen resolutions */
-.registerBGImage {
-  background-image: url('../../images/phonebooth-bg.jpg');
-  background-color: #FFFFFF;
-  min-height: 500px;
-  min-width: 1000px;
-  overflow: hidden;
+html, body, div {
+	height: 100%;
 }
-
+.chatRoomBox {
+	background: #FFFFFF no-repeat fixed center;
+	height: 60%;
+}
+.chatMessagesBox {
+	background: #0000FF no-repeat fixed center;
+}
+.chatUsersBox {
+	background: #00FF00 no-repeat fixed center; 
+}
+.chatTextBox {
+	background: #FF0000 no-repeat fixed center;
+	height: 20%;
+}
+.registerBGImage {
+  background: url(../../images/phonebooth-bg.jpg) no-repeat center center fixed; 
+  margin: 0;
+  padding: 0;
+}
 .centerRegisterForm {
    position:fixed;
-   top:50%;
-   left:30%;
-   width:500px;
+   top: 50%;
+   left: 30%;
 }

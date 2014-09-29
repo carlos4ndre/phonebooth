@@ -50,6 +50,6 @@
   "private": true,
   "publishConfig": {},
   "analyze": true,
-  "license": "GPL"
+  "license": "GPLv3"
 }
   
