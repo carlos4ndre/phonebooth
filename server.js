@@ -2,29 +2,28 @@
 var path = require('path');
 var express = require('express');
 var app = express();
-var http = require('http');
+var httpServer = require('http').Server(app);;
 var PeerServer = require('peer').PeerServer;
+var io = require('socket.io')(httpServer);
 
 // Environment Variables
 app.set('port', process.env.PORT || 8000);
 app.use(express.static(path.join(__dirname, 'web')));
 
-// Start HTTP Server
-http.createServer(app).listen(app.get('port'), function(){
-  console.log('Express server listening on port ' + app.get('port'));
+// Start HTTP Server and socket.io listeners
+io.on('connection', function(socket){
+  socket.on('register', function(nickname){
+	console.log('Register new user: ' + nickname);
+	// TODO: register user somewhere...
+	var registrationStatus = { nickname: nickname, status: true };
+	socket.emit('register',registrationStatus);
+  });
 });
+httpServer.listen(app.get('port'));
 
-// Start Peer server
-var server = new PeerServer({port: 9000});
-
-// Peer Server Listeners
-server.on('connection', function(id) { 
-	console.log('User ' + id + ' is connected.');
-})
-
-server.on('disconnect', function(id) {
-	console.log('User ' + id + ' is disconnected.');
-})
+// Start Peer server and Listeners
+var peerServer = new PeerServer({port: 9000});
+peerServer.on('connection', function(id) {})
 
 // Handle Ctrl+C events gracefully 	
 process.on('SIGINT', function() {

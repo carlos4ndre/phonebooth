@@ -1,7 +1,20 @@
-define(['angular'], function (angular) {
-	console.log("Woooohoooooooo!!!");
+define(['angular','jquery','socketio'], function (angular,$,io) {
 
-	//Define an angular module for our app
+  // Define socketio listeners
+  var socket = io();
+  socket.on('register', function(registrationStatus){
+    if(registrationStatus.status) {
+      console.log('Registration OK.');
+      console.log('Nickname: ' + registrationStatus.nickname);
+      // Update users list
+      var chatUsers = $("#chatUsers");
+      chatUsers.append('<b>' + registrationStatus.nickname + '</b>');
+    } else {
+      console.log('Registration NOK.');
+    }
+  });
+
+	// Define an angular module for our app
 	var app = angular.module('phoneboothApp', ['ngRoute']);
 	app.config(['$routeProvider','$locationProvider', function($routeProvider,$locationProvider) {
 		$routeProvider.
@@ -30,8 +43,9 @@ define(['angular'], function (angular) {
 	});
 
 	app.controller('chatroomController', function($scope, $rootScope) {
-    $scope.message = $rootScope.nickname;
-	});
+    // register user once it enters the chatroom
+    socket.emit('register', $rootScope.nickname);
+  });
 
   require(['domready'], function (document) {
     angular.bootstrap(document, ['phoneboothApp']);

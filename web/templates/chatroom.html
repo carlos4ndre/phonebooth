@@ -1,12 +1,14 @@
 <h1>ChatRoom</h1>
 <div class="row chatRoomBox">
 	<div class="col-md-8 chatMessagesBox">
-		<div ng-controller="chatroomController">
-			Welcome {{ message }}!
+		<div>
+			<b>Messages</b>
+			<div id="chatMessageBoard"></div>
 		</div>
   	</div>
   	<div class="col-md-4 chatUsersBox">
-  		Users
+  		<b>Users</b>
+  		<div id="chatUsers"></div>
   	</div>
 </div>
 <div class="row chatTextBox">

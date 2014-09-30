@@ -1,25 +1,43 @@
 /* TODO: Create media queries to support various types of screen resolutions */
-html, body, div {
+html, body {
 	height: 100%;
+}
+#container {
+	height: 100%;
+	margin: 10px 10px;
 }
 .chatRoomBox {
 	background: #FFFFFF no-repeat fixed center;
-	height: 60%;
+	padding: 0px 10px 10px 10px;
+	height: 80%;
 }
 .chatMessagesBox {
-	background: #0000FF no-repeat fixed center;
+	border-radius: 10px 10px 0px 0px;
+	-moz-border-radius: 10px 10px 0px 0px;
+	-webkit-border-radius: 10px 10px 0px 0px;
+	border: 2px solid #383838;
+	height: 100%;
+	padding: 10px;
+	overflow: scroll;
 }
 .chatUsersBox {
-	background: #00FF00 no-repeat fixed center; 
+	border-radius: 10px 10px 0px 0px;
+	-moz-border-radius: 10px 10px 0px 0px;
+	-webkit-border-radius: 10px 10px 0px 0px;
+	border: 2px solid #383838;
+	height: 100%;
+	padding: 10px;
+	overflow: scroll;
 }
 .chatTextBox {
-	background: #FF0000 no-repeat fixed center;
-	height: 20%;
+	padding: 0px 10px;
 }
 .registerBGImage {
-  background: url(../../images/phonebooth-bg.jpg) no-repeat center center fixed; 
-  margin: 0;
-  padding: 0;
+  background: url(../../images/phonebooth-bg.jpg) no-repeat center center fixed;
+  min-width: 100%;
+  min-height: 100%;
+  margin: -10px;
+  padding: -10px;
 }
 .centerRegisterForm {
    position:fixed;

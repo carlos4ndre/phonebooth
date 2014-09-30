@@ -7,13 +7,17 @@ requirejs.config({
         bootstrap: 'scripts/libs/bootstrap/dist/js/bootstrap',
         requirejs: 'scripts/libs/requirejs/require',
         spin: 'scripts/libs/spin/javascripts/jquery.spin',
-        peerjs: 'scripts/libs/peerjs/peer.min',
+        peerjs: 'scripts/libs/peerjs/peer',
         jquery: 'scripts/libs/jquery/dist/jquery.min',
         'angular-route': 'scripts/libs/angular-route/angular-route',
         'angular-resource': 'scripts/libs/angular-resource/angular-resource',
-        domready: 'scripts/libs/domready/ready'
+        domready: 'scripts/libs/domready/ready',
+        socketio: '../socket.io/socket.io'
     },
     shim: {
+        socketio: {
+            exports: 'io'
+        },
         bootstrap: [
             'jquery'
         ],
@@ -40,6 +44,6 @@ requirejs.config({
 });
 
 // Load modules
-requirejs(['jquery','domready','bootstrap','angular','angular-route','angular-resource'],function() {
+requirejs(['peerjs','socketio','jquery','domready','bootstrap','angular','angular-route','angular-resource'],function() {
     requirejs(['app/main']);
 });
