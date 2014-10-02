@@ -4,22 +4,22 @@ module.exports = function(grunt) {
 	// Configure grunt plugins
 	//--------------------------==
 	grunt.initConfig({
-    	pkg: grunt.file.readJSON('package.json'),
-    	clean: ["node_modules", "web/scripts/libs"],
-    	bower: {
-    		target: {
-      			rjsConfig: 'web/config.js',
+        pkg: grunt.file.readJSON('package.json'),
+        clean: ["node_modules", "web/scripts/libs"],
+        bower: {
+            target: {
+                rjsConfig: 'web/config.js',
                 options: {
                     exclude: ['fontawesome']
                 }
-    		}
+            }
         }
-  	});
+    });
 
 	//-----------------------==
 	// Load grunt plugins
 	//-----------------------==
-	grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-bower-requirejs');
 
 	//-----------------------==

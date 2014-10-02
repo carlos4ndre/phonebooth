@@ -33,14 +33,14 @@ html, body {
 	padding: 0px 10px;
 }
 .registerBGImage {
-  background: url(../../images/phonebooth-bg.jpg) no-repeat center center fixed;
-  min-width: 100%;
-  min-height: 100%;
-  margin: -10px;
-  padding: -10px;
+	background: url(../../images/phonebooth-bg.jpg) no-repeat center center fixed;
+	min-width: 100%;
+	min-height: 100%;
+	margin: -10px;
+	padding: -10px;
 }
 .centerRegisterForm {
-   position:fixed;
-   top: 50%;
-   left: 30%;
+	position:fixed;
+	top: 50%;
+	left: 30%;
 }

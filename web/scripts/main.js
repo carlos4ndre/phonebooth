@@ -2,23 +2,22 @@ define(['angular','jquery','socketio'], function (angular,$,io) {
 
   // Define socketio listeners
   var socket = io();
-  socket.on('register', function(registrationStatus){
-    if(registrationStatus.status) {
-      console.log('Registration OK.');
-      console.log('Nickname: ' + registrationStatus.nickname);
-      // Update users list
-      var chatUsers = $("#chatUsers");
-      chatUsers.append('<b>' + registrationStatus.nickname + '</b>');
-    } else {
-      console.log('Registration NOK.');
+  socket.on('updateUserList', function(data) {
+    console.log(data);
+    var chatUsers = $("#chatUsers");
+    chatUsers.empty();
+    for (var user in data.users) {
+      if (data.users.hasOwnProperty(user)) {
+        chatUsers.append('<div id="' + user + '">' + user + '</div>');
+      }
     }
   });
 
-	// Define an angular module for our app
-	var app = angular.module('phoneboothApp', ['ngRoute']);
-	app.config(['$routeProvider','$locationProvider', function($routeProvider,$locationProvider) {
-		$routeProvider.
-      		when('/chatroom', {
+  // Define an angular module for our app
+  var app = angular.module('phoneboothApp', ['ngRoute']);
+  app.config(['$routeProvider','$locationProvider', function($routeProvider,$locationProvider) {
+    $routeProvider.
+          when('/chatroom', {
         		templateUrl: 'templates/chatroom.html',
         		controller: 'chatroomController'
       		}).
@@ -42,9 +41,14 @@ define(['angular','jquery','socketio'], function (angular,$,io) {
       };
 	});
 
-	app.controller('chatroomController', function($scope, $rootScope) {
-    // register user once it enters the chatroom
-    socket.emit('register', $rootScope.nickname);
+	app.controller('chatroomController', function($scope, $location, $rootScope) {
+      // check that user doesn't have an empty nickname
+      if (!$scope.nickname) {
+        $rootScope.nickname = $scope.nickname;
+        $location.path("/register");
+      }
+      // register user once it enters the chatroom
+      socket.emit('register', $rootScope.nickname);
   });
 
   require(['domready'], function (document) {
