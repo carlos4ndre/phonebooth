@@ -23,6 +23,13 @@ io.on('connection', function(socket){
 		io.sockets.emit('updateUserList', { users: chatUsers });
 	});
 
+	socket.on('sendMessage', function(message) {
+		console.log('Got message from ' + message.nickname + '.');
+		if(message.text) {
+			io.sockets.emit('sendMessage', message);
+		}
+	});
+
 	socket.on('disconnect', function(){
 		console.log( socket.nickname + ' has disconnected from the chat.');
 		// delete user from chatUsers list and notify the other users

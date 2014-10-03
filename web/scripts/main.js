@@ -2,15 +2,18 @@ define(['angular','jquery','socketio'], function (angular,$,io) {
 
   // Define socketio listeners
   var socket = io();
-  socket.on('updateUserList', function(data) {
-    console.log(data);
+  socket.on('updateUserList', function(userList) {
     var chatUsers = $("#chatUsers");
     chatUsers.empty();
-    for (var user in data.users) {
-      if (data.users.hasOwnProperty(user)) {
+    for (var user in userList.users) {
+      if (userList.users.hasOwnProperty(user)) {
         chatUsers.append('<div id="' + user + '">' + user + '</div>');
       }
     }
+  });
+  socket.on('sendMessage', function(message) {
+    var chatMessageBoard = $("#chatMessageBoard");
+    chatMessageBoard.append('[' + message.nickname + ']: ' + message.text + '<br/>');
   });
 
   // Define an angular module for our app
@@ -49,6 +52,17 @@ define(['angular','jquery','socketio'], function (angular,$,io) {
       }
       // register user once it enters the chatroom
       socket.emit('register', $rootScope.nickname);
+
+      // create listener to send global message to everyone in the chatroom
+      $scope.sendMessageToAll = function() {
+        var messageToAll = $("#messageToAll");
+        var message = {
+          nickname: $scope.nickname,
+          text: messageToAll.val()
+        }
+        messageToAll.val('');
+        socket.emit('sendMessage', message);
+      };
   });
 
   require(['domready'], function (document) {
