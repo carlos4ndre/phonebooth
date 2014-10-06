@@ -3,11 +3,11 @@ define(['angular','jquery','socketio'], function (angular,$,io) {
   // Define socketio listeners
   var socket = io();
   socket.on('updateUserList', function(userList) {
-    var chatUsers = $("#chatUsers");
+    var chatUsers = $("#chatUsers ul");
     chatUsers.empty();
     for (var user in userList.users) {
       if (userList.users.hasOwnProperty(user)) {
-        chatUsers.append('<div id="' + user + '">' + user + '</div>');
+        chatUsers.append('<li id="' + user + '">' + user + '</li>');
       }
     }
   });
@@ -63,6 +63,12 @@ define(['angular','jquery','socketio'], function (angular,$,io) {
         messageToAll.val('');
         socket.emit('sendMessage', message);
       };
+
+      // add listener to selected user
+      var chatUsers = $("#chatUsers");
+      chatUsers.on("click", "li", function (event) {
+        $(this).addClass('selectedUser').siblings().removeClass('selectedUser');
+      });
   });
 
   require(['domready'], function (document) {
