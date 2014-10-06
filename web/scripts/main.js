@@ -7,9 +7,9 @@ define(['angular','jquery','socketio'], function (angular,$,io) {
     chatUsers.empty();
     for (var user in userList.users) {
       if (userList.users.hasOwnProperty(user)) {
-        chatUsers.append('<li id="' + user + '">'
+        chatUsers.append('<li>'
           + user
-          + '<button ng-click="startPrivateChat()" class="btn btn-primary pushRight" style="display:none">Chat</button>'
+          + '<button ng-click="startPrivateChat(&quot;' + user + '&quot;)" class="btn btn-primary btn-xs pushRight" style="display:none">Chat</button>'
           + '</li>'
         );
       }
@@ -34,12 +34,16 @@ define(['angular','jquery','socketio'], function (angular,$,io) {
     $routeProvider.
           when('/chatroom', {
         		templateUrl: 'templates/chatroom.html',
-        		controller: 'chatroomController'
+        		controller: 'chatRoomController'
       		}).
       		when('/register', {
         		templateUrl: 'templates/register.html',
         		controller: 'registerController'
-    		}).
+    		  }).
+          when('/chatroom/private/:nickname', {
+            templateUrl: 'templates/privatechatroom.html',
+            controller: 'privateChatRoomController'
+          }).
       		otherwise({
         		redirectTo: '/register'
       		});
@@ -56,7 +60,7 @@ define(['angular','jquery','socketio'], function (angular,$,io) {
       };
 	});
 
-	app.controller('chatroomController', function($scope, $location, $rootScope) {
+	app.controller('chatRoomController', function($scope, $location, $rootScope) {
       // check that user doesn't have an empty nickname
       if (!$scope.nickname) {
         $rootScope.nickname = $scope.nickname;
@@ -77,8 +81,8 @@ define(['angular','jquery','socketio'], function (angular,$,io) {
       };
 
       // create listener to start a new private chat
-      $scope.startPrivateChat = function() {
-        alert("start private chat!");
+      $scope.startPrivateChat = function(nickname) {
+        $location.path("/chatroom/private/" + nickname);
       }
 
       // add listener to selected user
@@ -89,6 +93,14 @@ define(['angular','jquery','socketio'], function (angular,$,io) {
       chatUsers.on("mouseleave", "li", function (event) {
         $(this).find(':button').hide();
       });
+  });
+
+  app.controller('privateChatRoomController', function($scope, $location, $rootScope) {
+      // check that user doesn't have an empty nickname
+      if (!$scope.nickname) {
+        $rootScope.nickname = $scope.nickname;
+        $location.path("/register");
+      }
   });
 
   require(['domready'], function (document) {
