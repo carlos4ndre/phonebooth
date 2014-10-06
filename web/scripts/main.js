@@ -7,9 +7,21 @@ define(['angular','jquery','socketio'], function (angular,$,io) {
     chatUsers.empty();
     for (var user in userList.users) {
       if (userList.users.hasOwnProperty(user)) {
-        chatUsers.append('<li id="' + user + '">' + user + '</li>');
+        chatUsers.append('<li id="' + user + '">'
+          + user
+          + '<button ng-click="startPrivateChat()" class="btn btn-primary pushRight" style="display:none">Chat</button>'
+          + '</li>'
+        );
       }
     }
+    // Compile new DOM element so that angular can use it properly
+    chatUsers.each(function () {
+      var content = $(this);
+       angular.element(document).injector().invoke(function($compile) {
+        var scope = angular.element(content).scope();
+        $compile(content)(scope);
+      });
+    });
   });
   socket.on('sendMessage', function(message) {
     var chatMessageBoard = $("#chatMessageBoard");
@@ -64,10 +76,18 @@ define(['angular','jquery','socketio'], function (angular,$,io) {
         socket.emit('sendMessage', message);
       };
 
+      // create listener to start a new private chat
+      $scope.startPrivateChat = function() {
+        alert("start private chat!");
+      }
+
       // add listener to selected user
       var chatUsers = $("#chatUsers");
-      chatUsers.on("click", "li", function (event) {
-        $(this).addClass('selectedUser').siblings().removeClass('selectedUser');
+      chatUsers.on("mouseenter", "li", function (event) {
+        $(this).find(':button').show();
+      });
+      chatUsers.on("mouseleave", "li", function (event) {
+        $(this).find(':button').hide();
       });
   });
 
