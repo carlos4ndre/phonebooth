@@ -1,11 +1,12 @@
 <h1><i class="fa fa-comment-o"></i> Secret ChatRoom!</h1>
 <div class="chatRoomBox">
 	<div class="row">
-		<div class="col-md-6 chatVideoBox">
+		<div class="col-md-5 chatVideoBox">
 			<h3><i class="fa fa-video-camera"></i> Local</h3>
 			<video id="chatLocalVideoBox" autoplay></video>
 		</div>
-		<div class="col-md-6 chatVideoBox">
+		<div class="col-md-1"></div>
+		<div class="col-md-5 chatVideoBox">
 			<h3><i class="fa fa-video-camera"></i> Remote</h3>
 			<video id="chatRemoteVideoBox" muted="true" autoplay></video>
 		</div>
@@ -18,7 +19,7 @@
 			</div>
 		</div>
 	</div>
-</div><br/><br/>
+</div>
 <div class="row chatTextBox">
 	<form class="form-horizontal col-md-12" ng-submit="sendMessageToUser()">
 		<div class="form-group col-md-8">
