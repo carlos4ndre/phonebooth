@@ -1,7 +1,18 @@
 define(['angular','jquery','socketio'], function (angular,$,io) {
 
-  // Define socketio listeners
+  /******************
+  **  PeerJS
+  *******************/
+  navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+  var peer = new Peer();
+
+
+  /******************
+  **  Socket.io
+  *******************/
   var socket = io();
+
+  // Event that updated users list whenever a user enter/leaves chat
   socket.on('updateUserList', function(userList) {
     var chatUsers = $("#chatUsers ul");
     chatUsers.empty();
@@ -14,7 +25,7 @@ define(['angular','jquery','socketio'], function (angular,$,io) {
         );
       }
     }
-    // Compile new DOM element so that angular can use it properly
+    // Compile newly created DOM element so that angular can interact with it properly
     chatUsers.each(function () {
       var content = $(this);
        angular.element(document).injector().invoke(function($compile) {
@@ -23,12 +34,18 @@ define(['angular','jquery','socketio'], function (angular,$,io) {
       });
     });
   });
+
+  // Event that writes a message to everyone connected to the chat
   socket.on('sendMessage', function(message) {
     var chatMessageBoard = $("#chatMessageBoard");
     chatMessageBoard.append('[' + message.nickname + ']: ' + message.text + '<br/>');
   });
 
-  // Define an angular module for our app
+  /******************
+  **  AngularJS
+  *******************/
+
+  // Define angular routing
   var app = angular.module('phoneboothApp', ['ngRoute']);
   app.config(['$routeProvider','$locationProvider', function($routeProvider,$locationProvider) {
     $routeProvider.
@@ -49,8 +66,9 @@ define(['angular','jquery','socketio'], function (angular,$,io) {
       		});
 	}]);
 
+  // Controller for register page
 	app.controller('registerController', function($scope, $location, $rootScope) {
-      $scope.submit = function() {
+      $scope.registerUser = function() {
         if ($scope.nickname) {
           $rootScope.nickname = $scope.nickname;
           $location.path("/chatroom/");
@@ -60,6 +78,7 @@ define(['angular','jquery','socketio'], function (angular,$,io) {
       };
 	});
 
+  // Controller for main chatroom page
 	app.controller('chatRoomController', function($scope, $location, $rootScope) {
       // check that user doesn't have an empty nickname
       if (!$scope.nickname) {
@@ -95,12 +114,20 @@ define(['angular','jquery','socketio'], function (angular,$,io) {
       });
   });
 
+  // Controller for private chatroom page
   app.controller('privateChatRoomController', function($scope, $location, $rootScope) {
       // check that user doesn't have an empty nickname
       if (!$scope.nickname) {
         $rootScope.nickname = $scope.nickname;
         $location.path("/register");
       }
+
+      // Get audio/video stream
+      navigator.getUserMedia({audio: true, video: true}, function(stream){
+        // Set your video displays
+        $('#chatLocalVideoBox').prop('src', URL.createObjectURL(stream));
+        window.localStream = stream;
+      }, function() { alert('failed to load video'); });
   });
 
   require(['domready'], function (document) {

@@ -33,36 +33,50 @@ li:hover {
 }
 .chatRoomBox {
 	background: #FFFFFF no-repeat fixed center;
-	padding: 0px 10px 10px 10px;
+	padding: 0px 20px 10px 20px;
 	height: 80%;
 }
 .chatMessagesBox {
-	border-radius: 10px 10px 0px 0px;
-	-moz-border-radius: 10px 10px 0px 0px;
-	-webkit-border-radius: 10px 10px 0px 0px;
-	border: 2px solid #383838;
+	border-radius: 10px 0px 0px 0px;
+	-moz-border-radius: 10px 0px 0px 0px;
+	-webkit-border-radius: 10px 0px 0px 0px;
+	border: 4px solid #99CCFF;
 	height: 100%;
 	padding: 10px;
-	overflow: scroll;
+	overflow: auto;
 }
 .chatUsersBox {
-	border-radius: 10px 10px 0px 0px;
-	-moz-border-radius: 10px 10px 0px 0px;
-	-webkit-border-radius: 10px 10px 0px 0px;
-	border: 2px solid #383838;
+	border-radius: 0px 10px 0px 0px;
+	-moz-border-radius: 0px 10px 0px 0px;
+	-webkit-border-radius: 0px 0px 0px 0px;
+	border: 4px solid #99CCFF;
 	height: 100%;
 	padding: 10px;
-	overflow: scroll;
+	overflow: auto;
+}
+.chatVideoBox {
+	border-radius: 0px 10px 0px 0px;
+	-moz-border-radius: 0px 10px 0px 0px;
+	-webkit-border-radius: 0px 0px 0px 0px;
+	border: 4px solid #99CCFF;
+	padding: 10px;
+	overflow: auto;
+}
+video {
+  height: 50%    !important;
+  width: 50%    !important;
 }
 .chatTextBox {
 	padding: 0px 10px;
 }
 .registerBGImage {
 	background: url(../../images/phonebooth-bg.jpg) no-repeat center center fixed;
-	min-width: 100%;
+  	-webkit-background-size: cover;
+  	-moz-background-size: cover;
+  	-o-background-size: cover;
+  	background-size: cover;
 	min-height: 100%;
-	margin: -10px;
-	padding: -10px;
+	min-width: 100%;
 }
 .centerRegisterForm {
 	position:fixed;

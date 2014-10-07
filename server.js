@@ -17,7 +17,6 @@ app.use(express.static(path.join(__dirname, 'web')));
 io.on('connection', function(socket){
 	socket.on('register', function(nickname){
 		console.log('Register new user: ' + nickname);
-		// TODO: register user somewhere...
 		socket.nickname = nickname;
 		chatUsers[nickname] = { /* user info */ };
 		io.sockets.emit('updateUserList', { users: chatUsers });
