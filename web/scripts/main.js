@@ -1,10 +1,15 @@
 define(['angular','jquery','socketio'], function (angular,$,io) {
 
   /******************
+  **  Global
+  *******************/
+  var chatUsers = [];
+
+  /******************
   **  PeerJS
   *******************/
   navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-  var peer = new Peer();
+  var peer = new Peer(generatePeerId());
 
 
   /******************
@@ -13,12 +18,14 @@ define(['angular','jquery','socketio'], function (angular,$,io) {
   var socket = io();
 
   // Event that updated users list whenever a user enter/leaves chat
-  socket.on('updateUserList', function(userList) {
-    var chatUsers = $("#chatUsers ul");
-    chatUsers.empty();
-    for (var user in userList.users) {
-      if (userList.users.hasOwnProperty(user)) {
-        chatUsers.append('<li>'
+  socket.on('updateUserList', function(users) {
+    // update users list and also display them on page
+    chatUsers = users;
+    var userList = $("#chatUsers ul");
+    userList.empty();
+    for (var user in chatUsers) {
+      if (chatUsers.hasOwnProperty(user)) {
+        userList.append('<li>'
           + user
           + '<button ng-click="startPrivateChat(&quot;' + user + '&quot;)" class="btn btn-primary btn-xs pushRight" style="display:none">Chat</button>'
           + '</li>'
@@ -26,7 +33,7 @@ define(['angular','jquery','socketio'], function (angular,$,io) {
       }
     }
     // Compile newly created DOM element so that angular can interact with it properly
-    chatUsers.each(function () {
+    userList.each(function () {
       var content = $(this);
        angular.element(document).injector().invoke(function($compile) {
         var scope = angular.element(content).scope();
@@ -39,6 +46,11 @@ define(['angular','jquery','socketio'], function (angular,$,io) {
   socket.on('sendMessage', function(message) {
     var chatMessageBoard = $("#chatMessageBoard");
     chatMessageBoard.append('[' + message.nickname + ']: ' + message.text + '<br/>');
+  });
+
+  // Event that prompts the user if he/she wishes to accept incoming chat request
+  socket.on('chatRequest', function(sender) {
+      alert('Incoming chat request from ' + sender.nickname);
   });
 
   /******************
@@ -86,7 +98,12 @@ define(['angular','jquery','socketio'], function (angular,$,io) {
         $location.path("/register");
       }
       // register user once it enters the chatroom
-      socket.emit('register', $rootScope.nickname);
+      var chatUser = {
+        nickname: $rootScope.nickname,
+        sessionId: socket.io.engine.id,
+        peerId: peer.id
+      }
+      socket.emit('register', chatUser);
 
       // create listener to send global message to everyone in the chatroom
       $scope.sendMessageToAll = function() {
@@ -122,13 +139,40 @@ define(['angular','jquery','socketio'], function (angular,$,io) {
         $location.path("/register");
       }
 
+      // send chat invite to target user with all sender's information
+      var chatRequest = { 
+        sender: chatUsers[$scope.nickname],
+        receiver: chatUsers[getIdFromURL($location.path())]
+      };
+      socket.emit('chatRequest', chatRequest);
+  });
+
+  /**********************
+  **  Support Functions
+  ***********************/
+  function startLocalVideo () {
       // Get audio/video stream
       navigator.getUserMedia({audio: true, video: true}, function(stream){
         // Set your video displays
         $('#chatLocalVideoBox').prop('src', URL.createObjectURL(stream));
         window.localStream = stream;
       }, function() { alert('failed to load video'); });
-  });
+  }
+
+  function getIdFromURL(url) {
+    return url.substr(url.lastIndexOf('/') + 1);
+  }
+
+  function generatePeerId()
+  {    
+    var charset = "abcdefghijklmnopqrstuvwxyz0123456789";
+    var peerId = "";
+
+    for( var i=0; i < 20; i++ ) {
+        peerId += charset.charAt(Math.floor(Math.random() * charset.length));
+    }
+    return peerId;
+  }
 
   require(['domready'], function (document) {
     angular.bootstrap(document, ['phoneboothApp']);

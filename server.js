@@ -15,17 +15,26 @@ app.use(express.static(path.join(__dirname, 'web')));
 
 // Start HTTP Server and socket.io listeners
 io.on('connection', function(socket){
-	socket.on('register', function(nickname){
-		console.log('Register new user: ' + nickname);
-		socket.nickname = nickname;
-		chatUsers[nickname] = { /* user info */ };
-		io.sockets.emit('updateUserList', { users: chatUsers });
+	socket.on('register', function(chatUser){
+		console.log('Register new user: ' + chatUser.nickname);
+		socket.nickname = chatUser.nickname;
+		chatUsers[chatUser.nickname] = chatUser;
+		io.sockets.emit('updateUserList', chatUsers);
 	});
 
 	socket.on('sendMessage', function(message) {
 		console.log('Got message from ' + message.nickname + '.');
 		if(message.text) {
 			io.sockets.emit('sendMessage', message);
+		}
+	});
+
+	socket.on('chatRequest', function(request) {
+		var sender = request.sender;
+		var receiver = request.receiver;
+		console.log( sender.nickname + ' is sending a chat request to ' + receiver.nickname + '.');
+		if(receiver.sessionId) {
+			io.to(receiver.sessionId).emit('chatRequest', sender);
 		}
 	});
 
