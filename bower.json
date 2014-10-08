@@ -10,6 +10,7 @@
     "spin": "~1.1.6",
     "domready": "~1.0.7",
     "requirejs": "~2.1.10",
-    "peerjs": "~0.3.8"
+    "peerjs": "~0.3.8",
+    "alertify": "~0.3.0"
   }
 }

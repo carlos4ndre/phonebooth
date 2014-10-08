@@ -1,4 +1,4 @@
-define(['angular','jquery','socketio'], function (angular,$,io) {
+define(['angular','jquery','socketio','alertify'], function (angular,$,io,alertify) {
 
   /******************
   **  Global
@@ -50,7 +50,19 @@ define(['angular','jquery','socketio'], function (angular,$,io) {
 
   // Event that prompts the user if he/she wishes to accept incoming chat request
   socket.on('chatRequest', function(sender) {
-      alert('Incoming chat request from ' + sender.nickname);
+    alertify.set({ labels: {
+      ok     : "Accept",
+      cancel : "Deny"
+    }});
+
+    // button labels will be "Accept" and "Deny"
+    alertify.confirm('Incoming chat request from ' + sender.nickname, function(e) {
+      if(e) {
+        alertify.success("Chat Request Accepted");
+      } else {
+        alertify.error("Chat Request Rejected");
+      }
+    });
   });
 
   /******************
