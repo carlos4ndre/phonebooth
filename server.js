@@ -34,15 +34,33 @@ io.on('connection', function(socket){
 		var receiver = request.receiver;
 		console.log( sender.nickname + ' is sending a chat request to ' + receiver.nickname + '.');
 		if(receiver.sessionId) {
-			io.to(receiver.sessionId).emit('chatRequest', sender);
+			io.to(receiver.sessionId).emit('chatRequest', request);
 		}
 	});
+
+	socket.on('startChat', function(request) {
+		var sender = request.sender;
+		var receiver = request.receiver;
+    	console.log('Chat request accepted by ' + receiver.nickname);
+		if(receiver.sessionId) {
+			io.to(sender.sessionId).emit('startChat', receiver);
+		}
+  	});
+
+  	socket.on('cancelChat', function(request) {
+  		var sender = request.sender;
+  		var receiver = request.receiver;
+    	console.log('Chat request cancelled by ' + receiver.nickname);
+    	if(receiver.sessionId) {
+    		io.to(sender.sessionId).emit('cancelChat', receiver);
+    	}
+  	});
 
 	socket.on('disconnect', function(){
 		console.log( socket.nickname + ' has disconnected from the chat.');
 		// delete user from chatUsers list and notify the other users
 		if(chatUsers.hasOwnProperty(socket.nickname)) { delete chatUsers[socket.nickname]; }
-		io.sockets.emit('updateUserList', { users: chatUsers });
+		io.sockets.emit('updateUserList', chatUsers);
 	});
 });
 httpServer.listen(app.get('port'));

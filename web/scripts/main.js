@@ -21,11 +21,11 @@ define(['angular','jquery','socketio','alertify'], function (angular,$,io,alerti
   socket.on('updateUserList', function(users) {
     // update users list and also display them on page
     chatUsers = users;
-    var userList = $("#chatUsers ul");
-    userList.empty();
+    var chatUsersList = $("#chatUsers ul");
+    chatUsersList.empty();
     for (var user in chatUsers) {
       if (chatUsers.hasOwnProperty(user)) {
-        userList.append('<li>'
+        chatUsersList.append('<li>'
           + user
           + '<button ng-click="startPrivateChat(&quot;' + user + '&quot;)" class="btn btn-primary btn-xs pushRight" style="display:none">Chat</button>'
           + '</li>'
@@ -33,7 +33,7 @@ define(['angular','jquery','socketio','alertify'], function (angular,$,io,alerti
       }
     }
     // Compile newly created DOM element so that angular can interact with it properly
-    userList.each(function () {
+    chatUsersList.each(function () {
       var content = $(this);
        angular.element(document).injector().invoke(function($compile) {
         var scope = angular.element(content).scope();
@@ -49,7 +49,10 @@ define(['angular','jquery','socketio','alertify'], function (angular,$,io,alerti
   });
 
   // Event that prompts the user if he/she wishes to accept incoming chat request
-  socket.on('chatRequest', function(sender) {
+  socket.on('chatRequest', function(request) {
+    var sender = request.sender;
+    var receiver = request.receiver;
+
     alertify.set({ labels: {
       ok     : "Accept",
       cancel : "Deny"
@@ -57,13 +60,29 @@ define(['angular','jquery','socketio','alertify'], function (angular,$,io,alerti
 
     // button labels will be "Accept" and "Deny"
     alertify.confirm('Incoming chat request from ' + sender.nickname, function(e) {
+      // send answer back to user
       if(e) {
+        socket.emit('startChat', request);
         alertify.success("Chat Request Accepted");
+        // redirect to private chatroom
+        window.location.href = '/#/chatroom/private/' + sender.nickname;
       } else {
+        socket.emit('cancelChat', request);
         alertify.error("Chat Request Rejected");
       }
     });
   });
+
+  socket.on('startChat', function(chatUser) {
+    // redirect to private chatroom
+    alertify.success('Chat request accepted by ' + chatUser.nickname);
+    window.location.href = '/#/chatroom/private/' + chatUser.nickname;
+  });
+
+  socket.on('cancelChat', function(chatUser) {
+    alertify.error('Chat request cancelled by ' + chatUser.nickname);
+  });
+
 
   /******************
   **  AngularJS
@@ -129,16 +148,21 @@ define(['angular','jquery','socketio','alertify'], function (angular,$,io,alerti
       };
 
       // create listener to start a new private chat
-      $scope.startPrivateChat = function(nickname) {
-        $location.path("/chatroom/private/" + nickname);
+      $scope.startPrivateChat = function(rcvNickname) {
+        // send chat invite to target user with all sender's information
+        var chatRequest = { 
+          sender: chatUsers[$rootScope.nickname],
+          receiver: chatUsers[rcvNickname]
+        };
+        socket.emit('chatRequest', chatRequest);
       }
 
       // add listener to selected user
-      var chatUsers = $("#chatUsers");
-      chatUsers.on("mouseenter", "li", function (event) {
+      var chatUsersList = $("#chatUsers");
+      chatUsersList.on("mouseenter", "li", function (event) {
         $(this).find(':button').show();
       });
-      chatUsers.on("mouseleave", "li", function (event) {
+      chatUsersList.on("mouseleave", "li", function (event) {
         $(this).find(':button').hide();
       });
   });
@@ -151,12 +175,8 @@ define(['angular','jquery','socketio','alertify'], function (angular,$,io,alerti
         $location.path("/register");
       }
 
-      // send chat invite to target user with all sender's information
-      var chatRequest = { 
-        sender: chatUsers[$scope.nickname],
-        receiver: chatUsers[getIdFromURL($location.path())]
-      };
-      socket.emit('chatRequest', chatRequest);
+      console.log($rootScope.nickname);
+      startLocalVideo();
   });
 
   /**********************
