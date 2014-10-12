@@ -9,17 +9,22 @@ define(['angular','jquery','socketio','alertify'], function (angular,$,io,alerti
   **  PeerJS
   *******************/
   navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-  var peer = new Peer(generatePeerId());
-
+  var peer = new Peer(generatePeerId(), {host: 'localhost', port: 9000, path: '/', debug: 3 });
+  peer.on('call', function(call){
+    receiveVideoStream(call);
+  });
+  peer.on('error', function(err){
+      alert(err.message);
+  });
 
   /******************
   **  Socket.io
   *******************/
   var socket = io();
 
-  // Event that updated users list whenever a user enter/leaves chat
+  // Event that updates user list whenever a user enter/leaves the chatroom
   socket.on('updateUserList', function(users) {
-    // update users list and also display them on page
+    // update user list and reflect this change in the page
     chatUsers = users;
     var chatUsersList = $("#chatUsers ul");
     chatUsersList.empty();
@@ -42,10 +47,10 @@ define(['angular','jquery','socketio','alertify'], function (angular,$,io,alerti
     });
   });
 
-  // Event that writes a message to everyone connected to the chat
+  // Event that writes a message to everyone connected to the main chatroom
   socket.on('sendMessage', function(message) {
     var chatMessageBoard = $("#chatMessageBoard");
-    chatMessageBoard.append('[' + message.nickname + ']: ' + message.text + '<br/>');
+    chatMessageBoard.append('[' + message.userId + ']: ' + message.text + '<br/>');
   });
 
   // Event that prompts the user if he/she wishes to accept incoming chat request
@@ -59,13 +64,13 @@ define(['angular','jquery','socketio','alertify'], function (angular,$,io,alerti
     }});
 
     // button labels will be "Accept" and "Deny"
-    alertify.confirm('Incoming chat request from ' + sender.nickname, function(e) {
+    alertify.confirm('Incoming chat request from ' + sender.userId, function(e) {
       // send answer back to user
       if(e) {
         socket.emit('startChat', request);
         alertify.success("Chat Request Accepted");
         // redirect to private chatroom
-        window.location.href = '/#/chatroom/private/' + sender.nickname;
+        window.location.href = '/#/chatroom/private/' + sender.userId;
       } else {
         socket.emit('cancelChat', request);
         alertify.error("Chat Request Rejected");
@@ -75,12 +80,12 @@ define(['angular','jquery','socketio','alertify'], function (angular,$,io,alerti
 
   socket.on('startChat', function(chatUser) {
     // redirect to private chatroom
-    alertify.success('Chat request accepted by ' + chatUser.nickname);
-    window.location.href = '/#/chatroom/private/' + chatUser.nickname;
+    alertify.success('Chat request accepted by ' + chatUser.userId);
+    window.location.href = '/#/chatroom/private/' + chatUser.userId;
   });
 
   socket.on('cancelChat', function(chatUser) {
-    alertify.error('Chat request cancelled by ' + chatUser.nickname);
+    alertify.error('Chat request cancelled by ' + chatUser.userId);
   });
 
 
@@ -100,7 +105,7 @@ define(['angular','jquery','socketio','alertify'], function (angular,$,io,alerti
         		templateUrl: 'templates/register.html',
         		controller: 'registerController'
     		  }).
-          when('/chatroom/private/:nickname', {
+          when('/chatroom/private/:userId', {
             templateUrl: 'templates/privatechatroom.html',
             controller: 'privateChatRoomController'
           }).
@@ -112,25 +117,26 @@ define(['angular','jquery','socketio','alertify'], function (angular,$,io,alerti
   // Controller for register page
 	app.controller('registerController', function($scope, $location, $rootScope) {
       $scope.registerUser = function() {
-        if ($scope.nickname) {
-          $rootScope.nickname = $scope.nickname;
+        if ($scope.userId) {
+          $rootScope.userId = $scope.userId;
           $location.path("/chatroom/");
         } else {
-          console.log('Empty Nickname!');
+          console.log('Empty userId!');
         }
       };
 	});
 
   // Controller for main chatroom page
 	app.controller('chatRoomController', function($scope, $location, $rootScope) {
-      // check that user doesn't have an empty nickname
-      if (!$scope.nickname) {
-        $rootScope.nickname = $scope.nickname;
+      // check that user doesn't have an empty userId
+      if (!$scope.userId) {
+        $rootScope.userId = $scope.userId;
         $location.path("/register");
       }
+
       // register user once it enters the chatroom
       var chatUser = {
-        nickname: $rootScope.nickname,
+        userId: $rootScope.userId,
         sessionId: socket.io.engine.id,
         peerId: peer.id
       }
@@ -140,7 +146,7 @@ define(['angular','jquery','socketio','alertify'], function (angular,$,io,alerti
       $scope.sendMessageToAll = function() {
         var messageToAll = $("#messageToAll");
         var message = {
-          nickname: $scope.nickname,
+          userId: $scope.userId,
           text: messageToAll.val()
         }
         messageToAll.val('');
@@ -148,11 +154,11 @@ define(['angular','jquery','socketio','alertify'], function (angular,$,io,alerti
       };
 
       // create listener to start a new private chat
-      $scope.startPrivateChat = function(rcvNickname) {
+      $scope.startPrivateChat = function(targetUserId) {
         // send chat invite to target user with all sender's information
         var chatRequest = { 
-          sender: chatUsers[$rootScope.nickname],
-          receiver: chatUsers[rcvNickname]
+          sender: chatUsers[$rootScope.userId],
+          receiver: chatUsers[targetUserId]
         };
         socket.emit('chatRequest', chatRequest);
       }
@@ -169,26 +175,53 @@ define(['angular','jquery','socketio','alertify'], function (angular,$,io,alerti
 
   // Controller for private chatroom page
   app.controller('privateChatRoomController', function($scope, $location, $rootScope) {
-      // check that user doesn't have an empty nickname
-      if (!$scope.nickname) {
-        $rootScope.nickname = $scope.nickname;
+      // check that user doesn't have an empty userId
+      if (!$scope.userId) {
+        $rootScope.userId = $scope.userId;
         $location.path("/register");
       }
-
-      console.log($rootScope.nickname);
-      startLocalVideo();
+      // display both local and remote A/V streams
+      displayLocalCamera();
+      var remoteChatUser = chatUsers[getIdFromURL($location.path())];
+      sendVideoStreamTo(remoteChatUser);
   });
 
   /**********************
   **  Support Functions
   ***********************/
-  function startLocalVideo () {
+  function displayLocalCamera () {
       // Get audio/video stream
       navigator.getUserMedia({audio: true, video: true}, function(stream){
         // Set your video displays
         $('#chatLocalVideoBox').prop('src', URL.createObjectURL(stream));
         window.localStream = stream;
-      }, function() { alert('failed to load video'); });
+      }, function() { alert('failed to load local video'); });
+  }
+
+  function sendVideoStreamTo(remoteChatUser) {
+      // Get audio/video stream
+      navigator.getUserMedia({audio: true, video: true}, function(stream){
+        // Set your video displays
+        window.remoteStream = stream;
+        var call = peer.call(remoteChatUser.peerId, window.remoteStream);
+        // Wait for stream on the call, then set peer video display
+        call.on('stream', function(stream) {
+          $('#chatRemoteVideoBox').prop('src', URL.createObjectURL(stream));
+        });
+      }, function(){ alert('failed to load remote video'); });
+  }
+
+  function receiveVideoStream(call) {
+    navigator.getUserMedia({video: true, audio: true}, function(stream) {
+      // Set your video displays
+      window.remoteStream = stream;
+      call.answer(stream); // Answer the call with an A/V stream.
+      call.on('stream', function(stream) {
+        $('#chatRemoteVideoBox').prop('src', URL.createObjectURL(stream));
+      });
+    }, function(err) {
+      console.log('Failed to get local stream' ,err);
+    });
   }
 
   function getIdFromURL(url) {
@@ -200,10 +233,10 @@ define(['angular','jquery','socketio','alertify'], function (angular,$,io,alerti
     var charset = "abcdefghijklmnopqrstuvwxyz0123456789";
     var peerId = "";
 
-    for( var i=0; i < 20; i++ ) {
+    for( var i=0; i < 14; i++ ) {
         peerId += charset.charAt(Math.floor(Math.random() * charset.length));
     }
-    return peerId;
+    return String(peerId);
   }
 
   require(['domready'], function (document) {
