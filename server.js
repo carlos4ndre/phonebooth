@@ -1,4 +1,5 @@
 // Load modules
+var config = require('config');
 var path = require('path');
 var express = require('express');
 var app = express();
@@ -8,9 +9,11 @@ var io = require('socket.io')(httpServer);
 
 // Global Variables
 var chatUsers = {};
+var nodeHttpPort = config.get('Node.http.port');
+var peerHttpPort = config.get('Peer.http.port');
 
 // Environment Variables
-app.set('port', process.env.PORT || 8000);
+app.set('port', nodeHttpPort || 8000);
 app.use(express.static(path.join(__dirname, 'web')));
 
 // Start HTTP Server and socket.io listeners
@@ -66,7 +69,7 @@ io.on('connection', function(socket){
 httpServer.listen(app.get('port'));
 
 // Start Peer server and Listeners
-var peerServer = new PeerServer({port: 9000});
+var peerServer = new PeerServer({port: peerHttpPort});
 peerServer.on('connection', function(id) {});
 peerServer.on('disconnect', function(id) {});
 
