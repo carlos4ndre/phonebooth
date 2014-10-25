@@ -26,9 +26,12 @@ io.on('connection', function(socket){
 	});
 
 	socket.on('sendMessage', function(message) {
-		console.log('Got message from ' + message.userId + '.');
+		var sender = message.sender;
+		var receiver = message.receiver;
+		console.log('Got message from ' + sender.userId + '.');
 		if(message.text) {
-			io.sockets.emit('sendMessage', message);
+			if(receiver && receiver.sessionId) { io.to(receiver.sessionId).emit('sendMessage', message); }
+			else { io.sockets.emit('sendMessage', message); }
 		}
 	});
 

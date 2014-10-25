@@ -49,8 +49,7 @@ define(['angular','jquery','socketio','alertify'], function (angular,$,io,alerti
 
   // Event that writes a message to everyone connected to the main chatroom
   socket.on('sendMessage', function(message) {
-    var chatMessageBoard = $("#chatMessageBoard");
-    chatMessageBoard.append('[' + message.userId + ']: ' + message.text + '<br/>');
+    addMessageToChat(message);
   });
 
   // Event that prompts the user if he/she wishes to accept incoming chat request
@@ -146,10 +145,12 @@ define(['angular','jquery','socketio','alertify'], function (angular,$,io,alerti
       $scope.sendMessageToAll = function() {
         var messageToAll = $("#messageToAll");
         var message = {
-          userId: $scope.userId,
+          sender: chatUsers[$scope.userId],
+          receiver: undefined, // will broadcast message to all users
           text: messageToAll.val()
         }
         messageToAll.val('');
+        console.log(message);
         socket.emit('sendMessage', message);
       };
 
@@ -180,9 +181,25 @@ define(['angular','jquery','socketio','alertify'], function (angular,$,io,alerti
         $rootScope.userId = $scope.userId;
         $location.path("/register");
       }
+      // get information about target user
+      var remoteChatUser = chatUsers[getIdFromURL($location.path())];
+
+      // create listener to send private message to target user
+      $scope.sendMessageToUser = function() {
+        var messageToUser = $("#messageToUser");
+        var message = {
+          sender: chatUsers[$scope.userId],
+          receiver: remoteChatUser, // will broadcast message to targer user
+          text: messageToUser.val()
+        }
+        messageToUser.val('');
+        socket.emit('sendMessage', message);
+        // update local message board
+        addMessageToChat(message);
+      };
+
       // display both local and remote A/V streams
       displayLocalCamera();
-      var remoteChatUser = chatUsers[getIdFromURL($location.path())];
       sendVideoStreamTo(remoteChatUser);
   });
 
@@ -222,6 +239,11 @@ define(['angular','jquery','socketio','alertify'], function (angular,$,io,alerti
     }, function(err) {
       console.log('Failed to get local stream' ,err);
     });
+  }
+
+  function addMessageToChat(message) {
+    var chatMessageBoard = $("#chatMessageBoard");
+    chatMessageBoard.append('[' + message.sender.userId + ']: ' + message.text + '<br/>');
   }
 
   function getIdFromURL(url) {
