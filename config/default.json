@@ -1,8 +1,10 @@
 {
   "Node": {
+    "hostname": "localhost",
     "http": { "port": 8000 }
   },
   "Peer": {
+    "hostname": "localhost",
     "http": { "port": 9000 }
   }
 }
