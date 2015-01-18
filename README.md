@@ -11,7 +11,7 @@ $ npm install
 ```
 
 And that's it, ready to go!
-  
+
 ## Usage
 
 To start the application, use the following command:

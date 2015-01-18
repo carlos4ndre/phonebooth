@@ -7,9 +7,9 @@
     "name": "Carlos André (aka w1zard)",
     "email": "carlos.ulrich@gmail.com"
   }],
-  "bin" : { 
+  "bin" : {
     "bower" : "node_modules/.bin/bower" ,
-    "grunt" : "node_modules/.bin/grunt" 
+    "grunt" : "node_modules/.bin/grunt"
   },
   "scripts": {
     "postinstall" : "grunt install && grunt bower",
@@ -54,4 +54,3 @@
   "analyze": true,
   "license": "GPLv3"
 }
-  
