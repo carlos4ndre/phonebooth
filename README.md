@@ -22,7 +22,7 @@ $ npm start
 
 Once the application is up and running, all clients should connect to localhost at port 8000.
 
-`Note:` To change the application settings, edit the files `config/default.json`and `web/scripts/config.js`.
+**Note:** To change the application settings, edit the files `config/default.json` and `web/scripts/config.js`.
 
 ## How it looks like
 
