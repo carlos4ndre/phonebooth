@@ -26,9 +26,15 @@ Once the application is up and running, all clients should connect to localhost 
 
 ## How it looks like
 
-![alt tag](https://raw.githubusercontent.com/carlos4ndre/phonebooth/master/demo/incoming-chat-request.png)
+**Public Chat Room**
 
 ![alt tag](https://raw.githubusercontent.com/carlos4ndre/phonebooth/master/demo/public-chat.png)
+
+**Incoming Private Chat Requests**
+
+![alt tag](https://raw.githubusercontent.com/carlos4ndre/phonebooth/master/demo/incoming-chat-request.png)
+
+**Private Chat Room**
 
 ![alt tag](https://raw.githubusercontent.com/carlos4ndre/phonebooth/master/demo/private-chat-request.png)
 
