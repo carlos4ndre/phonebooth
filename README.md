@@ -22,4 +22,11 @@ $ npm start
 
 Once the application is up and running, all clients should connect to localhost at port 8000.
 
-**Note:** Don't expect to much from this project as it's highly experimental, resembling like a Frankenstein monster :snowman:
+## How it looks like
+
+![alt tag](https://raw.githubusercontent.com/carlos4ndre/phonebooth/master/demo/incoming-chat-request.png)
+
+![alt tag](https://raw.githubusercontent.com/carlos4ndre/phonebooth/master/demo/public-chat.png)
+
+![alt tag](https://raw.githubusercontent.com/carlos4ndre/phonebooth/master/demo/private-chat-request.png)
+
