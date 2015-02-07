@@ -26,6 +26,10 @@ Once the application is up and running, all clients should connect to localhost 
 
 ## How it looks like
 
+**Register Page**
+
+![alt tag](https://raw.githubusercontent.com/carlos4ndre/phonebooth/master/demo/register.png)
+
 **Public Chat Room**
 
 ![alt tag](https://raw.githubusercontent.com/carlos4ndre/phonebooth/master/demo/public-chat.png)
